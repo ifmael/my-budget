@@ -28,31 +28,39 @@ const listFiles = async () => {
   return files;
 };
 
-const downloadFiles = async () => {
+// eslint-disable-next-line consistent-return
+module.exports = async () => {
   try {
+    const listOfPromises = [];
+    const listOfFiles = await listFiles();
+
     // eslint-disable-next-line no-restricted-syntax
-    for (const fileInDrive of await listFiles()) {
-      const { id, name } = fileInDrive;
-      const dest = fs.createWriteStream(`./reports/${name}`);
+    for (const fileInDrive of listOfFiles) {
       const promise = drive.files.get(
-        { fileId: id, alt: 'media' },
+        { fileId: fileInDrive.id, alt: 'media' },
         { responseType: 'stream' }
       );
+      listOfPromises.push(promise);
+    }
+    const listOfFileStreams = await Promise.all(listOfPromises);
 
-      promise.then((fileStream) => {
+    const savedFiles = listOfFileStreams.map((fileStream, index) => {
+      const { id, name } = listOfFiles[index];
+      return new Promise((resolve, reject) => {
+        const dest = fs.createWriteStream(`./reports/${name}`);
         fileStream.data
           .on('end', () => {
-            console.log(`File '${name}' saved in reports directory`);
+            resolve({ id, name, status: 'ok' });
           })
           .on('error', (err) => {
-            console.log('Error during download', err);
+            reject(new Error(`The file ${name} has failed: ${err}`));
           })
           .pipe(dest);
       });
-    }
+    });
+
+    return Promise.all(savedFiles);
   } catch (error) {
     console.log(error);
   }
 };
-
-downloadFiles();
