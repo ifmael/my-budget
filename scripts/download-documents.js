@@ -55,6 +55,7 @@ module.exports = async (basePath) => {
         const dest = fs.createWriteStream(`${basePath}${name}`);
         fileStream.data
           .on('end', () => {
+            console.log(`· File ${name} downloaded`);
             resolve({ id, name, status: 'ok' });
           })
           .on('error', (err) => {
