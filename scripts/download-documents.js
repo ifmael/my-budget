@@ -12,13 +12,18 @@ const auth = new google.auth.JWT(
 );
 const drive = google.drive({ version: 'v3', auth });
 
-// List of files for the current month
-const listFiles = async () => {
+const getDate = () => {
   const currentDate = new Date();
   const month = `0${currentDate.getMonth() + 1}`.slice(-2);
   const year = `${currentDate.getFullYear()}`.slice(-2);
+  return `${month}-${year}`;
+};
+
+// List of files for the current month
+const listFiles = async () => {
+  const date = getDate();
   const query = {
-    q: `name contains '${month}-${year}' and mimeType='text/csv'`,
+    q: `name contains '${date}' and mimeType='text/csv' or mimeType='application/vnd.ms-excel'`,
   };
 
   const {
@@ -29,11 +34,10 @@ const listFiles = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-module.exports = async () => {
+module.exports = async (basePath) => {
   try {
     const listOfPromises = [];
     const listOfFiles = await listFiles();
-
     // eslint-disable-next-line no-restricted-syntax
     for (const fileInDrive of listOfFiles) {
       const promise = drive.files.get(
@@ -46,8 +50,9 @@ module.exports = async () => {
 
     const savedFiles = listOfFileStreams.map((fileStream, index) => {
       const { id, name } = listOfFiles[index];
+
       return new Promise((resolve, reject) => {
-        const dest = fs.createWriteStream(`./reports/${name}`);
+        const dest = fs.createWriteStream(`${basePath}${name}`);
         fileStream.data
           .on('end', () => {
             resolve({ id, name, status: 'ok' });
