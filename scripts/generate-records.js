@@ -6,7 +6,7 @@ const {
 } = require('../utils/format-headers.js');
 
 const formatWalletRecords = (records) => {
-  return records.reduce((accRecords, currentRecord) => {
+  const walletRevolut = records.reduce((accRecords, currentRecord) => {
     const { date, category, subcategory, note, amount, out } = currentRecord;
     const dateFormated = fromWalletToDate(date);
 
@@ -23,10 +23,11 @@ const formatWalletRecords = (records) => {
       },
     ];
   }, []);
+  return walletRevolut;
 };
 
 const formatRevolutRecord = (records) => {
-  return records.reduce((accRecords, currentRecord) => {
+  const revolutRecord = records.reduce((accRecords, currentRecord) => {
     const { date, description, out, _in, category, notes } = currentRecord;
     const dateFormated = fromRevolutToDate(date);
     const isExpense = !!out.trim();
@@ -43,6 +44,7 @@ const formatRevolutRecord = (records) => {
       },
     ];
   }, []);
+  return revolutRecord;
 };
 
 const processDocument = (document) => {
@@ -59,7 +61,6 @@ const processDocument = (document) => {
 };
 
 module.exports = (documents) => {
-  const records = documents.map((document) => {
-    processDocument(document);
-  });
+  const records = documents.map((document) => processDocument(document));
+  return records.flat();
 };

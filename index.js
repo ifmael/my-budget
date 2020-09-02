@@ -1,6 +1,7 @@
 const fs = require('fs');
 const dowloadDocuments = require('./scripts/download-documents.js');
-const generateDocument = require('./scripts/generate-document.js');
+const generateRecords = require('./scripts/generate-records.js');
+const auth = require('./utils/auth.js');
 
 const main = async () => {
   try {
@@ -15,7 +16,8 @@ const main = async () => {
       const data = fs.readFileSync(`${basePath}${name}`, 'utf8');
       return { ...fileInfo, data };
     });
-    generateDocument(files);
+    const records = generateRecords(files);
+    console.log(records);
   } catch (error) {
     console.log(error);
   }

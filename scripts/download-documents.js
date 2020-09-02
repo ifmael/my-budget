@@ -1,26 +1,17 @@
 const { google } = require('googleapis');
 const fs = require('fs');
-const credentials = require('../config/credentials.json');
-
-// Set up the connection to Google drive
-const scopes = ['https://www.googleapis.com/auth/drive'];
-const auth = new google.auth.JWT(
-  credentials.client_email,
-  null,
-  credentials.private_key,
-  scopes
-);
-const drive = google.drive({ version: 'v3', auth });
+const auth = require('../utils/auth.js');
 
 const getDate = () => {
   const currentDate = new Date();
   const month = `0${currentDate.getMonth() + 1}`.slice(-2);
   const year = `${currentDate.getFullYear()}`.slice(-2);
-  return `${month}-${year}`;
+  // return `${month}-${year}`;
+  return `08-20`;
 };
 
 // List of files for the current month
-const listFiles = async () => {
+const listFiles = async (drive) => {
   const date = getDate();
   const query = {
     q: `name contains '${date}' and mimeType='text/csv' or mimeType='application/vnd.ms-excel'`,
@@ -36,8 +27,9 @@ const listFiles = async () => {
 // eslint-disable-next-line consistent-return
 module.exports = async (basePath) => {
   try {
+    const drive = google.drive({ version: 'v3', auth });
     const listOfPromises = [];
-    const listOfFiles = await listFiles();
+    const listOfFiles = await listFiles(drive);
     // eslint-disable-next-line no-restricted-syntax
     for (const fileInDrive of listOfFiles) {
       const promise = drive.files.get(
@@ -52,7 +44,7 @@ module.exports = async (basePath) => {
       const { id, name } = listOfFiles[index];
 
       return new Promise((resolve, reject) => {
-        const dest = fs.createWriteStream(`${basePath}${name}`);
+        const dest = fs.createWriteStream(`${basePath}${name}`, { flags: 'w' });
         fileStream.data
           .on('end', () => {
             console.log(`· File ${name} downloaded`);
