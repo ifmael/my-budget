@@ -1,14 +1,8 @@
+/* eslint-disable no-console */
 const { google } = require('googleapis');
 const fs = require('fs');
 const auth = require('../utils/auth.js');
-
-const getDate = () => {
-  const currentDate = new Date();
-  const month = `0${currentDate.getMonth() + 1}`.slice(-2);
-  const year = `${currentDate.getFullYear()}`.slice(-2);
-  // return `${month}-${year}`;
-  return `08-20`;
-};
+const { getDate } = require('../utils/date.js');
 
 // List of files for the current month
 const listFiles = async (drive) => {

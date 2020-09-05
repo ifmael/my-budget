@@ -31,4 +31,18 @@ const formatRevolutHeaderCsv = () => {
   ];
 };
 
-module.exports = { formatWalletHeaderCsv, formatRevolutHeaderCsv };
+const headerValues = [
+  'Date',
+  'Category',
+  'Subcategory',
+  'Description',
+  'Amount',
+  'Is Expense',
+  'Note',
+];
+
+module.exports = {
+  formatWalletHeaderCsv,
+  formatRevolutHeaderCsv,
+  headerValues,
+};

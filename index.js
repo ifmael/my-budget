@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const dowloadDocuments = require('./scripts/download-documents.js');
 const generateRecords = require('./scripts/generate-records.js');
 const createDocument = require('./scripts/create-document.js');
+const { getDate } = require('./utils/date.js');
 
 const main = async () => {
   try {
@@ -19,7 +21,13 @@ const main = async () => {
       return { ...fileInfo, data };
     });
     const records = generateRecords(files);
-    await createDocument(records);
+
+    // Create Document
+    const properties = {
+      date: getDate(),
+      records,
+    };
+    await createDocument(properties);
   } catch (error) {
     console.log(error);
   }

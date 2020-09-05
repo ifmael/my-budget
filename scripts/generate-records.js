@@ -13,13 +13,13 @@ const formatWalletRecords = (records) => {
     return [
       ...accRecords,
       {
-        date: dateFormated,
-        category,
-        subcategory,
-        description: note,
-        amount,
-        isExpense: !!out,
-        note: '',
+        Date: dateFormated,
+        Category: category,
+        Subcategory: subcategory,
+        Description: note,
+        Amount: amount.replace('.', ','),
+        'Is Expense': !!out,
+        Note: '',
       },
     ];
   }, []);
@@ -34,13 +34,15 @@ const formatRevolutRecord = (records) => {
     return [
       ...accRecords,
       {
-        date: dateFormated,
-        category: category.trim(),
-        subcategory: '',
-        description: description.trim(),
-        amount: isExpense ? out.trim() : _in.trim(),
-        isExpense,
-        notes: notes.trim(),
+        Date: dateFormated,
+        Category: category.trim(),
+        Subcategory: '',
+        Description: description.trim(),
+        Amount: isExpense
+          ? out.trim().replace('.', ',')
+          : _in.trim().replace('.', ','),
+        'Is Expense': isExpense,
+        Note: notes.trim(),
       },
     ];
   }, []);

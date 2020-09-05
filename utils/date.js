@@ -26,4 +26,12 @@ const fromRevolutToDate = (dateToConvert) => {
   return new Date(parseInt(year, 10), MONTH[month], parseInt(day, 10));
 };
 
-module.exports = { fromWalletToDate, fromRevolutToDate };
+const getDate = () => {
+  const currentDate = new Date();
+  const month = `0${currentDate.getMonth() + 1}`.slice(-2);
+  const year = `${currentDate.getFullYear()}`.slice(-2);
+  // return `${month}-${year}`;
+  return `08-20`;
+};
+
+module.exports = { fromWalletToDate, fromRevolutToDate, getDate };
